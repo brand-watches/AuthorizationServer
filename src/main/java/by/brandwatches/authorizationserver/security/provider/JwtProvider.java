@@ -88,12 +88,12 @@ public class JwtProvider {
         Map<String, Object> fields = new HashMap<>();
 
         fields.put(this.nameFieldId, user.getId());
-        fields.put(this.nameFieldLogin, user.getUsername());
+        fields.put(this.nameFieldLogin, user.getLogin());
 
         return Jwts
                 .builder()
                 .setClaims(fields)
-                .setSubject(user.getUsername())
+                .setSubject(user.getLogin())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExp))
                 .signWith(secretKey, SignatureAlgorithm.HS512)

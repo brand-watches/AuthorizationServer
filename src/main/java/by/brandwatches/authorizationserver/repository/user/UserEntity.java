@@ -4,16 +4,16 @@ package by.brandwatches.authorizationserver.repository.user;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-@Entity
+@Entity(name = "user")
 @Getter
 public class UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String username;
+    private String login;
 
     @Column(nullable = false)
     private String password;

@@ -16,13 +16,11 @@ import java.util.Objects;
 @Service
 public class AuthService implements IAuthService{
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
 
     public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = new PasswordEncoder();
         this.jwtProvider = new JwtProvider();
     }
 
@@ -32,7 +30,7 @@ public class AuthService implements IAuthService{
         if (Objects.isNull(user)) {
             throw new BadCredentialsException(Messages.BAD_CREDENTIALS);
         }
-        if (passwordEncoder.matchPassword(credentials.getPassword(), user.getPassword())) {
+        if (PasswordEncoder.matchPassword(credentials.getPassword(), user.getPassword())) {
             return jwtProvider.getTokens(user);
         } else {
             throw new BadCredentialsException(Messages.BAD_CREDENTIALS);
