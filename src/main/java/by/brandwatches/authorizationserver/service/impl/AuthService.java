@@ -1,6 +1,5 @@
 package by.brandwatches.authorizationserver.service.impl;
 
-
 import by.brandwatches.authorizationserver.message.Messages;
 import by.brandwatches.authorizationserver.security.provider.JwtProvider;
 import by.brandwatches.authorizationserver.repository.user.UserEntity;
@@ -43,7 +42,9 @@ public class AuthService implements IAuthService{
     @Override
     public JwtTokens refreshTokens(JwtTokens tokens) {
         if (jwtProvider.validateRefreshToken(tokens.getRefreshToken())) {
-            return jwtProvider.getTokens(tokens.getUser());
+            String login = jwtProvider.getLoginFromToken(tokens.getRefreshToken());
+            UserEntity user = userRepository.findByLogin(login);
+            return jwtProvider.getTokens(user);
         } else {
             throw new BadCredentialsException(Messages.BAD_CREDENTIALS);
         }

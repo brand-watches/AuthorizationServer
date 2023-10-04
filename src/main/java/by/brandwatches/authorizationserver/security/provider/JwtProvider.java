@@ -28,6 +28,12 @@ public class JwtProvider {
     @Value("${app.jwt.exp.refreshToken}")
     private Long jwtRefreshTokenExp;
 
+    @Value("login")
+    private String nameFieldLogin;
+
+    @Value("id")
+    private String nameFieldId;
+
     public JwtTokens getTokens(UserEntity user) {
         String accessToken = getJwtToken(user, jwtAccessSecret, jwtAccessTokenExp);
         String refreshToken = getJwtToken(user, jwtRefreshSecret, jwtRefreshTokenExp);
@@ -70,14 +76,19 @@ public class JwtProvider {
         }
     }
 
+    public String getLoginFromToken(String token) {
+        Claims claims = Jwts.parserBuilder().build().parseClaimsJwt(token).getBody();
+        return claims.get(this.nameFieldLogin, String.class);
+    }
+
 
     private String getJwtToken(UserEntity user, String jwtSecretKey, Long jwtExp) {
         SecretKey secretKey = getSecretKey(jwtSecretKey);
 
         Map<String, Object> fields = new HashMap<>();
 
-        fields.put("id", user.getId());
-        fields.put("username", user.getUsername());
+        fields.put(this.nameFieldId, user.getId());
+        fields.put(this.nameFieldLogin, user.getUsername());
 
         return Jwts
                 .builder()
