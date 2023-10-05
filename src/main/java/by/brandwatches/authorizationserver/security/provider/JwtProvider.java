@@ -4,6 +4,7 @@ import by.brandwatches.authorizationserver.message.Messages;
 import by.brandwatches.authorizationserver.repository.user.UserEntity;
 import by.brandwatches.authorizationserver.service.model.JwtTokens;
 import io.jsonwebtoken.*;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -28,22 +29,28 @@ public class JwtProvider {
     @Value("${app.jwt.exp.refreshToken}")
     private Long jwtRefreshTokenExp;
 
-    @Value("login")
-    private String nameFieldLogin;
+    private final String nameFieldLogin = "login";
 
-    @Value("id")
-    private String nameFieldId;
+    private final String nameFieldId = "id";
 
+    private Map<JwtSecretEnum, String> secretKeyMap;
+
+    @PostConstruct
+    public void init() {
+        secretKeyMap = new HashMap<>();
+        secretKeyMap.put(JwtSecretEnum.ACCESS_SECRET, jwtAccessSecret);
+        secretKeyMap.put(JwtSecretEnum.REFRESH_SECRET, jwtRefreshSecret);
+    }
     public JwtTokens getTokens(UserEntity user) {
-        String accessToken = getJwtToken(user, jwtAccessSecret, jwtAccessTokenExp);
-        String refreshToken = getJwtToken(user, jwtRefreshSecret, jwtRefreshTokenExp);
+        String accessToken = getJwtToken(user, this.jwtAccessSecret, this.jwtAccessTokenExp);
+        String refreshToken = getJwtToken(user, this.jwtRefreshSecret, this.jwtRefreshTokenExp);
         return new JwtTokens(accessToken, refreshToken);
     }
 
-    public boolean validateAccessToken(String token) {
+    public boolean validateToken(String token, JwtSecretEnum jwtSecret) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(jwtAccessSecret)
+                    .setSigningKey(getSecretKey(this.secretKeyMap.get(jwtSecret)))
                     .build()
                     .parseClaimsJws(token);
             return true;
@@ -58,26 +65,13 @@ public class JwtProvider {
         }
     }
 
-    public boolean validateRefreshToken(String token) {
-        try {
-            Jwts.parserBuilder()
-                    .setSigningKey(jwtRefreshSecret)
-                    .build()
-                    .parseClaimsJws(token);
-            return true;
-        } catch (MalformedJwtException ex) {
-            throw new MalformedJwtException(Messages.MALFORMED_JWT);
-        } catch (ExpiredJwtException ex) {
-            throw new ExpiredJwtException(ex.getHeader(), ex.getClaims(), Messages.EXPIRED_JWT);
-        } catch (UnsupportedJwtException ex) {
-            throw new UnsupportedJwtException(Messages.UNSUPPORTED_JWT);
-        } catch (IllegalArgumentException ex) {
-            throw new IllegalArgumentException(Messages.JWT_TOKEN_VALIDATION_EXCEPTION);
-        }
-    }
-
-    public String getLoginFromToken(String token) {
-        Claims claims = Jwts.parserBuilder().build().parseClaimsJwt(token).getBody();
+    public String getLoginFromToken(String token, JwtSecretEnum jwtSecret) {
+        Claims claims = Jwts
+                .parserBuilder()
+                .setSigningKey(getSecretKey(this.secretKeyMap.get(jwtSecret)))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
         return claims.get(this.nameFieldLogin, String.class);
     }
 
