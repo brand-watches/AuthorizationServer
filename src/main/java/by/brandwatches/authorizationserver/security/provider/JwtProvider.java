@@ -7,6 +7,7 @@ import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -73,6 +74,13 @@ public class JwtProvider {
                 .parseClaimsJws(token)
                 .getBody();
         return claims.get(this.nameFieldLogin, String.class);
+    }
+
+    public String extractToken(String authHeader) {
+        if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+        return null;
     }
 
 

@@ -50,4 +50,10 @@ public class AuthService implements IAuthService{
         }
     }
 
+    @Override
+    public boolean validateToken(String authHeader) {
+        String token = jwtProvider.extractToken(authHeader);
+        return jwtProvider.validateToken(token, JwtSecretEnum.ACCESS_SECRET);
+    }
+
 }

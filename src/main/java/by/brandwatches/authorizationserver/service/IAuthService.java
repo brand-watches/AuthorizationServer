@@ -7,5 +7,8 @@ import by.brandwatches.authorizationserver.service.model.LoginCredentials;
 public interface IAuthService {
 
     JwtTokens auth(LoginCredentials loginCredentials);
+
     JwtTokens refreshTokens(JwtTokens tokens);
+
+    boolean validateToken(String authHeader);
 }
