@@ -3,7 +3,6 @@ package by.brandwatches.authorizationserver.controller;
 import by.brandwatches.authorizationserver.service.impl.AuthService;
 import by.brandwatches.authorizationserver.service.model.JwtTokens;
 import by.brandwatches.authorizationserver.service.model.LoginCredentials;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +12,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @Autowired
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
