@@ -1,5 +1,6 @@
 package by.brandwatches.authorizationserver.service.impl;
 
+import by.brandwatches.authorizationserver.exception.BadCredentialsException;
 import by.brandwatches.authorizationserver.message.Messages;
 import by.brandwatches.authorizationserver.security.provider.JwtProvider;
 import by.brandwatches.authorizationserver.repository.user.UserEntity;
@@ -10,7 +11,6 @@ import by.brandwatches.authorizationserver.service.model.JwtTokens;
 import by.brandwatches.authorizationserver.service.model.LoginCredentials;
 import by.brandwatches.authorizationserver.util.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
